@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Skill, SkillStats } from '../types';
 import { skillsApi } from '../services/api';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<SkillStats | null>(null);
   const [recentSkills, setRecentSkills] = useState<Skill[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,7 +66,11 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="divide-y divide-gray-200">
             {recentSkills.map((skill) => (
-              <div key={skill.id} className="p-6 hover:bg-gray-50">
+              <div 
+                key={skill.id} 
+                className="p-6 hover:bg-gray-50 cursor-pointer transition-colors"
+                onClick={() => navigate(`/edit-skill/${skill.id}`)}
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800">{skill.name}</h3>
