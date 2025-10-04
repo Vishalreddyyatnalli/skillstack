@@ -2,24 +2,27 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Skill } from '../types/index.ts';
 import { skillsApi } from '../services/api';
+import UpdateProgressModal from '../components/UpdateProgressModal';
 
 export default function SkillsList() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedSkillId, setSelectedSkillId] = useState<number | null>(null);
+  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+
+  const fetchSkills = async () => {
+    try {
+      const response = await skillsApi.getAll();
+      setSkills(response.data);
+      setIsLoading(false);
+    } catch (err) {
+      setError('Failed to fetch skills');
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchSkills = async () => {
-      try {
-        const response = await skillsApi.getAll();
-        setSkills(response.data);
-        setIsLoading(false);
-      } catch (err) {
-        setError('Failed to fetch skills');
-        setIsLoading(false);
-      }
-    };
-
     fetchSkills();
   }, []);
 
@@ -43,6 +46,16 @@ export default function SkillsList() {
   if (error) {
     return <div className="text-red-600 p-4">{error}</div>;
   }
+
+  const handleUpdateProgress = (skillId: number) => {
+    setSelectedSkillId(skillId);
+    setIsProgressModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedSkillId(null);
+    setIsProgressModalOpen(false);
+  };
 
   return (
     <div>
@@ -80,17 +93,30 @@ export default function SkillsList() {
                 </div>
               </div>
               <div className="mt-4 flex space-x-4">
-                <button className="text-sm text-primary-600 hover:text-primary-700">
+                <button 
+                  onClick={() => handleUpdateProgress(skill.id)}
+                  className="text-sm px-3 py-1 bg-primary-50 text-primary-600 rounded-md hover:bg-primary-100 transition-colors"
+                >
                   Update Progress
                 </button>
-                <button className="text-sm text-gray-600 hover:text-gray-700">
+                <Link 
+                  to={`/edit-skill/${skill.id}`}
+                  className="text-sm text-gray-600 hover:text-gray-700"
+                >
                   Edit
-                </button>
+                </Link>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      <UpdateProgressModal
+        skillId={selectedSkillId || 0}
+        isOpen={isProgressModalOpen}
+        onClose={handleCloseModal}
+        onUpdate={fetchSkills}
+      />
     </div>
   );
 }

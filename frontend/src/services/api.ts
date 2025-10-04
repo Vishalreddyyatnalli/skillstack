@@ -17,8 +17,10 @@ export const skillsApi = {
 };
 
 export const progressApi = {
-  create: (data: any) => api.post('/progress/', data),
-  update: (id: number, data: any) => api.put(`/progress/${id}/`, data),
+  create: (data: { skill: number; date: string; hours_spent: number; notes: string }) => 
+    api.post('/progress/', data),
+  update: (id: number, data: { date: string; hours_spent: number; notes: string }) => 
+    api.put(`/progress/${id}/`, data),
   delete: (id: number) => api.delete(`/progress/${id}/`),
 };
 
