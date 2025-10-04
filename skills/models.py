@@ -33,7 +33,7 @@ class Skill(models.Model):
     hours_spent = models.DecimalField(max_digits=5, decimal_places=1, default=0)
     difficulty_rating = models.IntegerField(choices=DIFFICULTY_LEVELS, default=1)
     notes = models.TextField(blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
